@@ -85,7 +85,9 @@ objectExtend(HtmlTestRunner.prototype, {
 
     _getSeparateApplicationWindow: function () {
         if (this.appWindow == null) {
-            this.appWindow = openSeparateApplicationWindow('TestRunner-splash.html', this.controlPanel.isAutomatedRun());
+            var suppressWarning = this.controlPanel.isAutomatedRun();
+            var maximized = this.controlPanel.isMaximizedWindowMode();
+            this.appWindow = openSeparateApplicationWindow('TestRunner-splash.html', suppressWarning, maximized);
         }
         return this.appWindow;
     },

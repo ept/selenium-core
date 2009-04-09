@@ -850,7 +850,14 @@ function o2s(obj) {
 
 var seenReadyStateWarning = false;
 
-function openSeparateApplicationWindow(url, suppressMozillaWarning) {
+// Opens a new browser window which will later be used to load the target website,
+// and initialise it with the given URL. If maximizedWindow is false, arrange the browser windows
+// on screen such that both the test log and the target website can be seen side-by-side.
+// If maximizedWindow is true, see openMaximizedApplicationWindow().
+function openSeparateApplicationWindow(url, suppressMozillaWarning, maximizedWindow) {
+    // Handle maximized target application window seperately
+    if (maximizedWindow) return openMaximizedApplicationWindow(url);
+
     // resize the Selenium window itself
     window.resizeTo(1200, 500);
     window.moveTo(window.screenX, 0);
@@ -879,10 +886,31 @@ function openSeparateApplicationWindow(url, suppressMozillaWarning) {
         LOG.exception(e);
     }
 
-
     if (!suppressMozillaWarning && window.document.readyState == null && !seenReadyStateWarning) {
         alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.  Install the Selenium IDE extension or the readyState extension available from selenium.openqa.org to make page load detection more reliable.");
         seenReadyStateWarning = true;
+    }
+
+    return appWindow;
+}
+
+
+// Opens a new browser window which fills the screen and hides the test log behind it.
+// Initialise it with the given URL.
+function openMaximizedApplicationWindow(url) {
+    var appWindow = window.open(url + '?start=true', 'selenium_main_app_window');
+    if (appWindow == null) {
+        var errorMessage = "Couldn't open app window; is the pop-up blocker enabled?"
+        LOG.error(errorMessage);
+        throw new Error("Couldn't open app window; is the pop-up blocker enabled?");
+    }
+    try {
+        appWindow.moveTo(0, 0);
+        appWindow.resizeTo(screen.availWidth, screen.availHeight);
+        appWindow.focus();
+    } catch (e) {
+        LOG.error("Couldn't maximize app window");
+        LOG.exception(e);
     }
 
     return appWindow;
@@ -937,6 +965,10 @@ objectExtend(URLConfiguration.prototype, {
         return this._isQueryParameterTrue('multiWindow');
     },
     
+    isMaximizedWindowMode:function() {
+        return this._isQueryParameterTrue('maximizedWindow');
+    },
+
     getBaseUrl:function() {
         return this._getQueryParameter('baseUrl');
             
