@@ -54,6 +54,11 @@
                 <updatePolicy>never</updatePolicy>
             </releases>
         </repository>
+     	<repository>
+			<id>laughing-panda</id>
+			<name>Laughing Panda</name>
+			<url>http://www.laughingpanda.org/maven2/</url>
+		</repository>
     </repositories>
     <build>
         <resources>
@@ -64,13 +69,6 @@
             <directory>target/generated-resources</directory>
           </resource>
         </resources>
-	    <!-- extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions -->
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -80,7 +78,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.2-SNAPSHOT</version>
+                <version>1.3</version>
                 <executions>
                     <execution>
                         <id>generate-resources</id>
@@ -128,24 +126,24 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>ant</groupId>
+                        <groupId>org.apache.ant</groupId>
                         <artifactId>ant-trax</artifactId>
-                        <version>1.6.5</version>
+                        <version>1.7.1</version>
                     </dependency>
                     <dependency>
-                        <groupId>ant</groupId>
+                        <groupId>org.apache.ant</groupId>
                         <artifactId>ant-nodeps</artifactId>
-                        <version>1.6.5</version>
+                        <version>1.7.1</version>
                     </dependency>
                     <dependency>
-                        <groupId>ant</groupId>
+                        <groupId>org.apache.ant</groupId>
                         <artifactId>ant-junit</artifactId>
-                        <version>1.6.5</version>
+                        <version>1.7.1</version>
                     </dependency>
                     <dependency>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
-                        <version>3.8.1</version>
+                        <version>4.4</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -250,7 +248,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.2-SNAPSHOT</version>
+                        <version>1.3</version>
                         <executions>
                             <execution>
                                 <id>integration-test</id>
@@ -278,14 +276,14 @@
                         </executions>
                         <dependencies>
                             <dependency>
-                                <groupId>ant</groupId>
+                                <groupId>org.apache.ant</groupId>
                                 <artifactId>ant-trax</artifactId>
-                                <version>1.6.5</version>
+                                <version>1.7.1</version>
                             </dependency>
                             <dependency>
-                                <groupId>ant</groupId>
+                                <groupId>org.apache.ant</groupId>
                                 <artifactId>ant-junit</artifactId>
-                                <version>1.6.5</version>
+                                <version>1.7.1</version>
                             </dependency>
                             <dependency>
                                 <groupId>junit</groupId>
@@ -304,6 +302,71 @@
                 </plugins>
             </build>
         </profile>
+        
+        <profile>
+            <id>integration-test-iexplore</id>
+            <activation>
+                <!-- Reqire manual activation of this profile with -Pintegration-test-firefox
+                <property>
+                    <name>!skipTests</name>
+                </property>-->
+            </activation>
+            <properties>
+                <slowResources>false</slowResources>
+                <multiWindow>true</multiWindow>
+                <browser>*iexplore</browser>
+                <seleneseSuite>TestSuite-InternetExplorer</seleneseSuite>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.3</version>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <phase>integration-test</phase>
+                                <configuration>
+                                    <tasks>
+                                        <taskdef resource="selenium-ant.properties">
+                                            <classpath refid="maven.test.classpath" />
+                                        </taskdef>
+                                        <selenese 
+                                            browser="${browser}"
+                                            suite="src/main/resources/tests/${seleneseSuite}.html"
+                                            port="4444"
+                                            slowResources="${slowResources}"
+                                            multiWindow="${multiWindow}"
+                                            startURL="http://localhost:4444" />
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-trax</artifactId>
+                                <version>1.7.1</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-junit</artifactId>
+                                <version>1.7.1</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>junit</groupId>
+                                <artifactId>junit</artifactId>
+                                <version>4.4</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
     </profiles>
     <pluginRepositories>
         <pluginRepository>
@@ -332,9 +395,9 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:http://svn.seleniumhq.org/svn/selenium-core/trunk</connection>
-        <developerConnection>scm:svn:https://svn.seleniumhq.org/svn/selenium-core/trunk</developerConnection>
-        <url>http://svn.seleniumhq.org/svn/selenium-core/trunk</url>
+        <connection>scm:svn:http://svn.openqa.org/svn/selenium-core/trunk</connection>
+        <developerConnection>scm:svn:https://svn.openqa.org/svn/selenium-core/trunk</developerConnection>
+        <url>http://svn.openqa.org/svn/selenium-core/trunk</url>
     </scm>
     <dependencies>
         <dependency>
@@ -346,13 +409,13 @@
         <dependency>
             <groupId>rhino</groupId>
             <artifactId>js</artifactId>
-            <version>1.6R5</version>
+            <version>1.7R1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

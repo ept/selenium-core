@@ -179,7 +179,7 @@ function Selenium(browserbot) {
         return browserbot;
     };
     this.defaultTimeout = Selenium.DEFAULT_TIMEOUT;
-    this.mouseSpeed = 10;
+    this.mouseSpeed = Selenium.DEFAULT_MOUSE_SPEED;
 }
 
 Selenium.DEFAULT_TIMEOUT = 30 * 1000;
@@ -1802,7 +1802,7 @@ Selenium.prototype.getAllFields = function() {
 };
 
 Selenium.prototype.getAttributeFromAllWindows = function(attributeName) {
-    /** Returns every instance of some attribute from all known windows.
+    /** Returns an array of JavaScript property values from all known windows having one.
     *
     * @param attributeName name of an attribute on the windows
     * @return string[] the set of values of this attribute from all known windows.
@@ -1876,7 +1876,13 @@ Selenium.prototype.doSetMouseSpeed = function(pixels) {
     * just send one "mousemove" at the start location and then one final one at the end location.</p>
     * @param pixels the number of pixels between "mousemove" events
     */
-    this.mouseSpeed = pixels;
+    var intValue = new Number(pixels);
+    if (intValue.constructor != Number ||
+    		intValue < 0 ) {
+    	this.mouseSpeed = Selenium.DEFAULT_MOUSE_SPEED;
+    } else {
+    	this.mouseSpeed = pixels;
+    }
 }
  
 Selenium.prototype.getMouseSpeed = function() {
@@ -1972,25 +1978,25 @@ Selenium.prototype.doWindowMaximize = function() {
 };
 
 Selenium.prototype.getAllWindowIds = function() {
-  /** Returns the IDs of all windows that the browser knows about.
+  /** Returns the IDs of all windows that the browser knows about in an array.
    *
-   * @return string[] the IDs of all windows that the browser knows about.
+   * @return string[] Array of identifiers of all windows that the browser knows about.
    */
    return this.getAttributeFromAllWindows("id");
 };
 
 Selenium.prototype.getAllWindowNames = function() {
-  /** Returns the names of all windows that the browser knows about.
+  /** Returns the names of all windows that the browser knows about in an array.
    *
-   * @return string[] the names of all windows that the browser knows about.
+   * @return string[] Array of names of all windows that the browser knows about.
    */
    return this.getAttributeFromAllWindows("name");
 };
 
 Selenium.prototype.getAllWindowTitles = function() {
-  /** Returns the titles of all windows that the browser knows about.
+  /** Returns the titles of all windows that the browser knows about in an array.
    *
-   * @return string[] the titles of all windows that the browser knows about.
+   * @return string[] Array of titles of all windows that the browser knows about.
    */
    return this.getAttributeFromAllWindows("document.title");
 };
@@ -2729,7 +2735,7 @@ Selenium.prototype.doCaptureEntirePageScreenshot = function(filename, kwargs) {
                 if (exceptionMessage ==
                     "Automation server can't create object") {
                     msg += 'Is it installed? Does it have permission to run '
-                        'as an add-on? See http://snapsie.sourceforge.net/';
+                        + 'as an add-on? See http://snapsie.sourceforge.net/';
                 }
                 else {
                     msg += exceptionMessage;
