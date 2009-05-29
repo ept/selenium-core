@@ -1,4 +1,4 @@
-<project name="selenium" default="dist" xmlns:maven="urn:maven-artifact-ant">
+<project name="selenium" xmlns:maven="urn:maven-artifact-ant">
 
     <property name="version" value="0.8.3-SNAPSHOT"/>
 
