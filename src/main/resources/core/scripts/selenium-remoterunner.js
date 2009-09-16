@@ -58,12 +58,8 @@ objectExtend(RemoteRunnerOptions.prototype, {
         return this._getQueryParameter("driverUrl");
     },
 
-    // requires per-session extension Javascript as soon as this Selenium
-    // instance becomes aware of the session identifier
     getSessionId: function() {
-        var sessionId = this._getQueryParameter("sessionId");
-        requireExtensionJs(sessionId);
-        return sessionId;
+        return this._getQueryParameter("sessionId");
     },
 
     _acquireQueryString: function () {
@@ -82,8 +78,8 @@ objectExtend(RemoteRunnerOptions.prototype, {
 });
 var runOptions;
 
-function runSeleniumTest() {
-    runOptions = new RemoteRunnerOptions();
+function runSeleniumTest(_runOptions) {
+    runOptions = _runOptions;
     var testAppWindow;
 
     if (runOptions.isMultiWindowMode()) {
