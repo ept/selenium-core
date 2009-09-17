@@ -26,28 +26,6 @@ HtmlUtilTest.prototype.testFlashEffectShouldHighlightElementBackgroundColorThenC
     this.assertArrayEquals([highlightColor, previousColor], colorsChanged);
 }
 
-HtmlUtilTest.prototype.testgetKeyCodeFromKeySequenceShouldReturnCorrectAsciiCodeOfInputKeySequence = function() {
-    this.assertEquals(119, getKeyCodeFromKeySequence("w"));
-    this.assertEquals(119, getKeyCodeFromKeySequence("\\119"));
-    this.assertEquals(92, getKeyCodeFromKeySequence("\\"));
-    this.assertEquals(92, getKeyCodeFromKeySequence("\\92"));
-    this.assertEquals(55, getKeyCodeFromKeySequence("7"));
-    this.assertEquals(55, getKeyCodeFromKeySequence("\\55"));
-}
-
-HtmlUtilTest.prototype.testgetKeyCodeFromKeySequenceShouldBackwardCompatibleFor2Or3DigitAsciiCodes = function() {
-    this.assertEquals(119, getKeyCodeFromKeySequence("119"));
-    this.assertEquals(92, getKeyCodeFromKeySequence("92"));
-    this.assertEquals(55, getKeyCodeFromKeySequence("55"));
-}
-
-HtmlUtilTest.prototype.testgetKeyCodeFromKeySequenceShouldFailOnIncorrectInput = function() {
-    this.checkKeySequence("");
-    this.checkKeySequence("\\a");
-    this.checkKeySequence("\\1234");
-    this.checkKeySequence("ab");
-}
-
 HtmlUtilTest.prototype.testAbsolutify = function() {
     this.assertEquals("http://x/blah", absolutify("http://x/blah", "http://y"));
     
@@ -84,16 +62,6 @@ HtmlUtilTest.prototype.testParseAndReassembleUrl = function() {
     ];
     for (var i = 0; i < tests.length; i++) {
         this.assertEquals(tests[i], reassembleLocation(parseUrl(tests[i])));
-    }
-}
-
-HtmlUtilTest.prototype.checkKeySequence = function(input) {
-    try {
-        getKeyCodeFromKeySequence(input);
-        this.fail("exception expected");
-    } catch (e) {
-        this.assertTrue(e.isSeleniumError);
-        this.assertEquals("invalid keySequence", e.message);
     }
 }
 

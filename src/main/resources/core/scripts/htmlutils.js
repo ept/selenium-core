@@ -310,24 +310,6 @@ function triggerEvent(element, eventType, canBubble, controlKeyDown, altKeyDown,
     }
 }
 
-function getKeyCodeFromKeySequence(keySequence) {
-    var match = /^\\(\d{1,3})$/.exec(keySequence);
-    if (match != null) {
-        return match[1];
-    }
-    match = /^.$/.exec(keySequence);
-    if (match != null) {
-        return match[0].charCodeAt(0);
-    }
-    // this is for backward compatibility with existing tests
-    // 1 digit ascii codes will break however because they are used for the digit chars
-    match = /^\d{2,3}$/.exec(keySequence);
-    if (match != null) {
-        return match[0];
-    }
-    throw new SeleniumError("invalid keySequence");
-}
-
 function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
      var evt = element.ownerDocument.createEventObject();
      evt.shiftKey = shiftKeyDown;
@@ -337,20 +319,40 @@ function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, me
      return evt;
 }
 
+/**
+ * Causes a key event to happen on an element.
+ *
+ * On most browsers the format of keySequence makes no difference, however to work around SRC-385
+ * on Firefox, keySequences specified as a single character are treated as character events,
+ * while keySequences of the form "\xxx" will be treated as key events.
+ */ 
 function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
-    var keycode = getKeyCodeFromKeySequence(keySequence);
+
+    var keycode, charcode;
+    var match = /^\\(\d{1,3})$/.exec(keySequence);
+    if (match) {
+        keycode = Number(match[1]);
+    } else if (keySequence.length == 1) {
+        charcode = keySequence.charCodeAt(0);
+    } else if (/^\d{2,3}$/.test(keySequence)){
+        keycode = Number(keySequence);
+    } else {
+        throw new SeleniumError("invalid keySequence");
+    }
+
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent && element.ownerDocument && element.ownerDocument.createEventObject) { // IE
         var keyEvent = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
-        keyEvent.keyCode = keycode;
+        keyEvent.keyCode = keycode || charcode;
         element.fireEvent('on' + eventType, keyEvent);
     }
     else {
         var evt;
         if (window.KeyEvent) {
             evt = document.createEvent('KeyEvents');
-            evt.initKeyEvent(eventType, true, true, window, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, keycode, keycode);
+            evt.initKeyEvent(eventType, true, true, window, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, keycode, charcode);
         } else {
+            keycode = keycode || charcode;
             evt = document.createEvent('UIEvents');
             
             evt.shiftKey = shiftKeyDown;
