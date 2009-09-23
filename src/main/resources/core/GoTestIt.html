@@ -51,10 +51,6 @@ Copyright 2009 Ept Computing Ltd
     }
 
 </script>
-<script language=JavaScript" type="text/javascript">
-    window.runOptions = new RemoteRunnerOptions();
-    requireExtensionJs(window.runOptions.getSessionId());
-</script>
 </head>
 
 <body onLoad="setTimeout(function(){runSeleniumTest(window.runOptions);},1000)" onUnload="cleanUp()">
@@ -99,6 +95,10 @@ Copyright 2009 Ept Computing Ltd
   </tr>
 </table>
 
+<script language=JavaScript" type="text/javascript">
+    window.runOptions = new RemoteRunnerOptions();
+    requireExtensionJs(window.runOptions.getSessionId());
+</script>
 </body>
 </html>
 
